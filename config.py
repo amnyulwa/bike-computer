@@ -32,7 +32,7 @@ SEA_LEVEL_HPA = 1013.25
 
 # ── Timing ────────────────────────────────────────────────────────────────────
 SENSOR_POLL_HZ   = 1    # how often to read I2C sensors (Hz)
-DISPLAY_FPS      = 2    # display refresh rate (frames/sec)
+DISPLAY_FPS      = 2    # display refresh rate (frames/sec) — Pi Zero max ~2-3 fps
 LOG_INTERVAL_SEC = 5    # GPX trackpoint write interval (seconds)
 
 # ── Logging ───────────────────────────────────────────────────────────────────
