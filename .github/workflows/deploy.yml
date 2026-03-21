@@ -1,0 +1,29 @@
+name: Deploy to Raspberry Pi
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Pull & restart on Pi
+    # Runs directly on the Raspberry Pi via the self-hosted runner.
+    # The runner makes an outbound connection to GitHub — no port forwarding needed.
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull latest code
+        run: |
+          cd ~/Projects/bike-computer
+          git pull origin main
+
+      - name: Install / update Python dependencies
+        run: |
+          cd ~/Projects/bike-computer
+          pip3 install --break-system-packages -q -r requirements.txt
+
+      - name: Restart bike-computer service
+        run: sudo systemctl restart bike-computer
+
+      - name: Verify service is running
+        run: sudo systemctl status bike-computer --no-pager

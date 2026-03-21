@@ -1,0 +1,30 @@
+# Bike Computer — Python dependencies
+# Install on Raspberry Pi with:  pip install -r requirements.txt
+
+# Adafruit CircuitPython / Blinka hardware abstraction layer
+adafruit-blinka
+
+# ILI9341 TFT display driver
+adafruit-circuitpython-rgb-display
+
+# BME280 — temperature, humidity, barometric pressure
+adafruit-circuitpython-bme280
+
+# SGP40 — VOC gas sensor
+adafruit-circuitpython-sgp40
+
+# LPS22HB — barometric pressure (backup sensor on Waveshare HAT)
+adafruit-circuitpython-lps2x
+
+# Image composition for the TFT framebuffer
+pillow
+
+# GPS UART
+pyserial
+pynmea2
+
+# Raw I2C access (used for ICM20948 IMU driver)
+smbus2
+
+# GPIO control (touch IRQ pin)
+RPi.GPIO

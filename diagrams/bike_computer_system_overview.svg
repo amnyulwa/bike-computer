@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" width="900" height="620" font-family="monospace, sans-serif">
+  <!-- Background -->
+  <rect width="900" height="620" fill="#1a1a2e" rx="12"/>
+
+  <!-- Title -->
+  <text x="450" y="38" text-anchor="middle" fill="#e0e0e0" font-size="20" font-weight="bold">Bike Computer — System Overview</text>
+  <text x="450" y="58" text-anchor="middle" fill="#888" font-size="12">Raspberry Pi Zero · GPS HAT · Waveshare Env HAT · ILI9341 TFT</text>
+
+  <!-- Legend -->
+  <rect x="20" y="15" width="14" height="14" fill="#3a86ff" rx="3"/>
+  <text x="38" y="26" fill="#ccc" font-size="11">SPI</text>
+  <rect x="75" y="15" width="14" height="14" fill="#38b000" rx="3"/>
+  <text x="93" y="26" fill="#ccc" font-size="11">I2C</text>
+  <rect x="130" y="15" width="14" height="14" fill="#ff6b35" rx="3"/>
+  <text x="148" y="26" fill="#ccc" font-size="11">UART</text>
+  <rect x="200" y="15" width="14" height="14" fill="#e63946" rx="3"/>
+  <text x="218" y="26" fill="#ccc" font-size="11">3.3V</text>
+  <rect x="255" y="15" width="14" height="14" fill="#555" rx="3"/>
+  <text x="273" y="26" fill="#ccc" font-size="11">GND</text>
+
+  <!-- ===== RASPBERRY PI ZERO (center) ===== -->
+  <rect x="300" y="220" width="300" height="180" fill="#16213e" stroke="#4cc9f0" stroke-width="2.5" rx="10"/>
+  <rect x="300" y="220" width="300" height="32" fill="#0f3460" rx="10 10 0 0"/>
+  <text x="450" y="241" text-anchor="middle" fill="#4cc9f0" font-size="13" font-weight="bold">Raspberry Pi Zero</text>
+  <text x="450" y="258" text-anchor="middle" fill="#4cc9f0" font-size="10">(with headers)</text>
+
+  <!-- Pi chip -->
+  <rect x="395" y="280" width="110" height="80" fill="#0a0a1a" stroke="#4cc9f0" stroke-width="1" rx="6"/>
+  <text x="450" y="316" text-anchor="middle" fill="#4cc9f0" font-size="11">BCM2835</text>
+  <text x="450" y="330" text-anchor="middle" fill="#4cc9f0" font-size="9">SPI0 · I2C1 · UART0</text>
+  <text x="450" y="344" text-anchor="middle" fill="#4cc9f0" font-size="9">GPIO 40-pin header</text>
+
+  <!-- Pi GPIO header indicator -->
+  <rect x="310" y="375" width="280" height="16" fill="#0f3460" stroke="#4cc9f0" stroke-width="1" rx="3"/>
+  <text x="450" y="387" text-anchor="middle" fill="#4cc9f0" font-size="9">40-pin GPIO Header</text>
+
+  <!-- ===== GPS HAT (top) ===== -->
+  <rect x="310" y="80" width="280" height="100" fill="#16213e" stroke="#ff6b35" stroke-width="2.5" rx="10"/>
+  <rect x="310" y="80" width="280" height="28" fill="#3d1d00" rx="10 10 0 0"/>
+  <text x="450" y="99" text-anchor="middle" fill="#ff9f1c" font-size="13" font-weight="bold">Adafruit Ultimate GPS HAT</text>
+  <text x="450" y="120" text-anchor="middle" fill="#aaa" font-size="10">MTK3339 GPS Module</text>
+  <text x="450" y="135" text-anchor="middle" fill="#aaa" font-size="10">10Hz update · 66 channels</text>
+  <text x="450" y="150" text-anchor="middle" fill="#aaa" font-size="10">Lat / Lon / Speed / Altitude</text>
+  <text x="450" y="165" text-anchor="middle" fill="#ff6b35" font-size="10" font-weight="bold">↕ stacks on Pi 40-pin header</text>
+
+  <!-- GPS arrow down to Pi (UART) -->
+  <line x1="400" y1="182" x2="400" y2="218" stroke="#ff6b35" stroke-width="2.5" marker-end="url(#arrowOrange)"/>
+  <line x1="500" y1="182" x2="500" y2="218" stroke="#ff6b35" stroke-width="2.5" marker-end="url(#arrowOrange)"/>
+  <rect x="410" y="192" width="80" height="18" fill="#1a1a2e" rx="4"/>
+  <text x="450" y="205" text-anchor="middle" fill="#ff6b35" font-size="10" font-weight="bold">UART TX/RX</text>
+  <text x="382" y="215" fill="#ff9f1c" font-size="8">GPIO14</text>
+  <text x="482" y="215" fill="#ff9f1c" font-size="8">GPIO15</text>
+
+  <!-- ===== WAVESHARE ENV HAT (left) ===== -->
+  <rect x="30" y="190" width="220" height="200" fill="#16213e" stroke="#38b000" stroke-width="2.5" rx="10"/>
+  <rect x="30" y="190" width="220" height="28" fill="#0d2900" rx="10 10 0 0"/>
+  <text x="140" y="209" text-anchor="middle" fill="#70e000" font-size="11" font-weight="bold">Waveshare Env Sensor HAT</text>
+  <text x="140" y="233" text-anchor="middle" fill="#aaa" font-size="9">BME280 — Temp/Humidity/Pressure</text>
+  <text x="140" y="248" text-anchor="middle" fill="#aaa" font-size="9">TSL25911 — Ambient Light</text>
+  <text x="140" y="263" text-anchor="middle" fill="#aaa" font-size="9">ICM20948 — 9-DOF IMU</text>
+  <text x="140" y="278" text-anchor="middle" fill="#aaa" font-size="9">SGP40 — VOC Sensor</text>
+  <text x="140" y="293" text-anchor="middle" fill="#aaa" font-size="9">LPS22HB — Barometric Pressure</text>
+  <text x="140" y="308" text-anchor="middle" fill="#aaa" font-size="9">TCS34725 — Color Sensor</text>
+  <text x="140" y="330" text-anchor="middle" fill="#38b000" font-size="9" font-weight="bold">↕ stacks on GPS HAT headers</text>
+  <text x="140" y="345" text-anchor="middle" fill="#38b000" font-size="9">I2C addr: 0x76, 0x69, 0x68…</text>
+  <text x="140" y="362" text-anchor="middle" fill="#38b000" font-size="9" font-weight="bold">→ passthrough on 40-pin header</text>
+
+  <!-- Waveshare arrow right to Pi (I2C) -->
+  <line x1="252" y1="300" x2="298" y2="300" stroke="#38b000" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+  <rect x="254" y="282" width="42" height="30" fill="#1a1a2e" rx="4"/>
+  <text x="275" y="294" text-anchor="middle" fill="#38b000" font-size="9" font-weight="bold">I2C</text>
+  <text x="275" y="306" text-anchor="middle" fill="#70e000" font-size="8">SDA/SCL</text>
+
+  <!-- ===== ILI9341 TFT (right) ===== -->
+  <rect x="650" y="170" width="225" height="240" fill="#16213e" stroke="#3a86ff" stroke-width="2.5" rx="10"/>
+  <rect x="650" y="170" width="225" height="28" fill="#001f5b" rx="10 10 0 0"/>
+  <text x="762" y="189" text-anchor="middle" fill="#74b3ff" font-size="12" font-weight="bold">Adafruit 2.4" ILI9341 TFT</text>
+  <text x="762" y="210" text-anchor="middle" fill="#aaa" font-size="9">320×240 Color Display</text>
+  <text x="762" y="225" text-anchor="middle" fill="#aaa" font-size="9">Resistive Touchscreen</text>
+  <text x="762" y="240" text-anchor="middle" fill="#aaa" font-size="9">MicroSD card slot</text>
+
+  <!-- TFT pin list -->
+  <text x="662" y="262" fill="#3a86ff" font-size="9" font-weight="bold">SPI (Display):</text>
+  <text x="662" y="275" fill="#aaa" font-size="9">CLK → GPIO11  MOSI → GPIO10</text>
+  <text x="662" y="288" fill="#aaa" font-size="9">MISO → GPIO9  CS → GPIO8</text>
+  <text x="662" y="301" fill="#aaa" font-size="9">DC → GPIO25  RST → GPIO27</text>
+
+  <text x="662" y="320" fill="#9b59b6" font-size="9" font-weight="bold">SPI (Touch):</text>
+  <text x="662" y="333" fill="#aaa" font-size="9">T_CS → GPIO7  T_IRQ → GPIO17</text>
+
+  <text x="662" y="352" fill="#e63946" font-size="9" font-weight="bold">Power:</text>
+  <text x="662" y="365" fill="#aaa" font-size="9">VIN → 3.3V (Pin 17)</text>
+  <text x="662" y="378" fill="#aaa" font-size="9">GND → GND (Pin 20)</text>
+  <text x="662" y="391" fill="#aaa" font-size="9">LITE → 3.3V (Pin 17)</text>
+
+  <!-- TFT arrow left to Pi (SPI) -->
+  <line x1="648" y1="285" x2="602" y2="285" stroke="#3a86ff" stroke-width="2.5" marker-end="url(#arrowBlue)"/>
+  <rect x="604" y="268" width="42" height="30" fill="#1a1a2e" rx="4"/>
+  <text x="625" y="280" text-anchor="middle" fill="#3a86ff" font-size="9" font-weight="bold">SPI0</text>
+  <text x="625" y="292" text-anchor="middle" fill="#74b3ff" font-size="8">6 wires</text>
+
+  <!-- ===== POWER section (bottom) ===== -->
+  <rect x="290" y="440" width="320" height="80" fill="#16213e" stroke="#e63946" stroke-width="2" rx="8"/>
+  <rect x="290" y="440" width="320" height="24" fill="#3d0005" rx="8 8 0 0"/>
+  <text x="450" y="457" text-anchor="middle" fill="#ff6b6b" font-size="12" font-weight="bold">Power Supply</text>
+  <text x="450" y="478" text-anchor="middle" fill="#aaa" font-size="10">5V micro-USB → Pi Zero</text>
+  <text x="450" y="493" text-anchor="middle" fill="#aaa" font-size="10">Pi → 3.3V rail (via onboard regulator)</text>
+  <text x="450" y="508" text-anchor="middle" fill="#aaa" font-size="10">All HATs and TFT powered from Pi header</text>
+
+  <!-- Power arrow -->
+  <line x1="450" y1="438" x2="450" y2="402" stroke="#e63946" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowRed)"/>
+
+  <!-- ===== NOTES (bottom) ===== -->
+  <text x="450" y="552" text-anchor="middle" fill="#666" font-size="10">HAT Stack Order (bottom → top):  Pi Zero → GPS HAT → Waveshare Env HAT</text>
+  <text x="450" y="568" text-anchor="middle" fill="#666" font-size="10">TFT connected via jumper wires to Pi GPIO header passthrough pins</text>
+  <text x="450" y="584" text-anchor="middle" fill="#666" font-size="10">BMP280 omitted — Waveshare HAT includes equivalent sensors (BME280 / LPS22HB)</text>
+  <text x="450" y="600" text-anchor="middle" fill="#444" font-size="9">Open in browser to zoom · bike_computer_system_overview.svg</text>
+
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#3a86ff"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#38b000"/>
+    </marker>
+    <marker id="arrowOrange" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#ff6b35"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#e63946"/>
+    </marker>
+  </defs>
+</svg>

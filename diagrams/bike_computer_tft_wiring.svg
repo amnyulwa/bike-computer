@@ -1,0 +1,198 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" width="960" height="640" font-family="monospace, sans-serif">
+  <rect width="960" height="640" fill="#1a1a2e" rx="12"/>
+
+  <!-- Title -->
+  <text x="480" y="34" text-anchor="middle" fill="#e0e0e0" font-size="18" font-weight="bold">Bike Computer — ILI9341 TFT Wiring Detail</text>
+  <text x="480" y="52" text-anchor="middle" fill="#888" font-size="11">Adafruit 2.4" TFT → Raspberry Pi Zero · SPI0 Interface</text>
+
+  <!-- ============================================================
+       LEFT: TFT Breakout Board
+       ============================================================ -->
+  <rect x="30" y="75" width="200" height="490" fill="#16213e" stroke="#3a86ff" stroke-width="2.5" rx="10"/>
+  <!-- Screen mock -->
+  <rect x="40" y="85" width="180" height="130" fill="#000830" stroke="#3a86ff" stroke-width="1.5" rx="4"/>
+  <text x="130" y="145" text-anchor="middle" fill="#3a86ff" font-size="20" font-weight="bold">TFT</text>
+  <text x="130" y="165" text-anchor="middle" fill="#3a86ff" font-size="10">320 × 240</text>
+  <text x="130" y="180" text-anchor="middle" fill="#3a86ff" font-size="9">ILI9341 Driver</text>
+  <!-- Touch overlay outline -->
+  <rect x="42" y="87" width="176" height="126" fill="none" stroke="#9b59b6" stroke-width="1" stroke-dasharray="4,3" rx="3"/>
+
+  <!-- PCB label -->
+  <text x="130" y="232" text-anchor="middle" fill="#3a86ff" font-size="11" font-weight="bold">Adafruit 2.4" TFT</text>
+  <text x="130" y="245" text-anchor="middle" fill="#888" font-size="9">w/ Touchscreen + MicroSD</text>
+
+  <!-- Pin header on right side of TFT -->
+  <rect x="226" y="270" width="12" height="270" fill="#1a1a0a" stroke="#e9c46a" stroke-width="1" rx="2"/>
+
+  <!-- TFT Pin labels (right side) -->
+  <!-- 11 pins total for the display+touch interface -->
+  <text x="220" y="294" text-anchor="end" fill="#e63946" font-size="11" font-weight="bold">VIN</text>
+  <circle cx="232" cy="290" r="4" fill="#e63946"/>
+
+  <text x="220" y="322" text-anchor="end" fill="#555" font-size="11">3.3V</text>
+  <circle cx="232" cy="318" r="4" fill="#555" stroke="#888" stroke-width="1"/>
+  <text x="42" y="322" fill="#555" font-size="8">(onboard reg out)</text>
+
+  <text x="220" y="350" text-anchor="end" fill="#888" font-size="11">GND</text>
+  <circle cx="232" cy="346" r="4" fill="#555"/>
+
+  <text x="220" y="378" text-anchor="end" fill="#3a86ff" font-size="11" font-weight="bold">CLK</text>
+  <circle cx="232" cy="374" r="4" fill="#3a86ff"/>
+
+  <text x="220" y="406" text-anchor="end" fill="#3a86ff" font-size="11" font-weight="bold">MOSI</text>
+  <circle cx="232" cy="402" r="4" fill="#3a86ff"/>
+
+  <text x="220" y="434" text-anchor="end" fill="#3a86ff" font-size="11" font-weight="bold">MISO</text>
+  <circle cx="232" cy="430" r="4" fill="#3a86ff"/>
+
+  <text x="220" y="462" text-anchor="end" fill="#3a86ff" font-size="11" font-weight="bold">CS</text>
+  <circle cx="232" cy="458" r="4" fill="#3a86ff"/>
+
+  <text x="220" y="490" text-anchor="end" fill="#4cc9f0" font-size="11" font-weight="bold">DC</text>
+  <circle cx="232" cy="486" r="4" fill="#4cc9f0"/>
+
+  <text x="220" y="518" text-anchor="end" fill="#4cc9f0" font-size="11" font-weight="bold">RST</text>
+  <circle cx="232" cy="514" r="4" fill="#4cc9f0"/>
+
+  <text x="220" y="546" text-anchor="end" fill="#e63946" font-size="11" font-weight="bold">LITE</text>
+  <circle cx="232" cy="542" r="4" fill="#e63946"/>
+
+  <!-- Touch pins -->
+  <text x="220" y="574" text-anchor="end" fill="#9b59b6" font-size="11" font-weight="bold">T_CS</text>
+  <circle cx="232" cy="570" r="4" fill="#9b59b6"/>
+
+  <text x="220" y="602" text-anchor="end" fill="#9b59b6" font-size="11" font-weight="bold">T_IRQ</text>
+  <circle cx="232" cy="598" r="4" fill="#9b59b6"/>
+
+  <!-- MicroSD note -->
+  <rect x="40" y="600" width="180" height="28" fill="#0a0a1a" stroke="#888" stroke-width="1" rx="3"/>
+  <text x="130" y="618" text-anchor="middle" fill="#888" font-size="9">μSD shares SPI0 bus (own CS)</text>
+
+  <!-- ============================================================
+       RIGHT: Raspberry Pi GPIO Header
+       ============================================================ -->
+  <rect x="720" y="75" width="200" height="490" fill="#0d2a0d" stroke="#4cc9f0" stroke-width="2.5" rx="10"/>
+  <text x="820" y="100" text-anchor="middle" fill="#4cc9f0" font-size="12" font-weight="bold">Raspberry Pi Zero</text>
+  <text x="820" y="114" text-anchor="middle" fill="#4cc9f0" font-size="9">GPIO Header (40-pin)</text>
+  <text x="820" y="128" text-anchor="middle" fill="#888" font-size="8">relevant pins shown</text>
+
+  <!-- Pi pin header (left side of pi box) -->
+  <rect x="720" y="270" width="12" height="270" fill="#1a1a0a" stroke="#e9c46a" stroke-width="1" rx="2"/>
+
+  <!-- Pi Pin entries (with pin numbers) -->
+  <!-- 3.3V Pin 17 -->
+  <circle cx="728" cy="290" r="4" fill="#e63946"/>
+  <text x="748" y="294" fill="#e63946" font-size="10" font-weight="bold">Pin 17 · 3.3V</text>
+  <text x="900" y="294" text-anchor="end" fill="#888" font-size="8">→ VIN &amp; LITE</text>
+
+  <!-- GND Pin 20 -->
+  <circle cx="728" cy="346" r="4" fill="#555"/>
+  <text x="748" y="350" fill="#888" font-size="10">Pin 20 · GND</text>
+
+  <!-- GPIO11 SCLK Pin 23 -->
+  <circle cx="728" cy="374" r="4" fill="#3a86ff"/>
+  <text x="748" y="378" fill="#3a86ff" font-size="10" font-weight="bold">Pin 23 · GPIO11 SCLK</text>
+
+  <!-- GPIO10 MOSI Pin 19 -->
+  <circle cx="728" cy="402" r="4" fill="#3a86ff"/>
+  <text x="748" y="406" fill="#3a86ff" font-size="10" font-weight="bold">Pin 19 · GPIO10 MOSI</text>
+
+  <!-- GPIO9 MISO Pin 21 -->
+  <circle cx="728" cy="430" r="4" fill="#3a86ff"/>
+  <text x="748" y="434" fill="#3a86ff" font-size="10" font-weight="bold">Pin 21 · GPIO9 MISO</text>
+
+  <!-- GPIO8 CE0 Pin 24 -->
+  <circle cx="728" cy="458" r="4" fill="#3a86ff"/>
+  <text x="748" y="462" fill="#3a86ff" font-size="10" font-weight="bold">Pin 24 · GPIO8 CE0</text>
+
+  <!-- GPIO25 Pin 22 -->
+  <circle cx="728" cy="486" r="4" fill="#4cc9f0"/>
+  <text x="748" y="490" fill="#4cc9f0" font-size="10" font-weight="bold">Pin 22 · GPIO25</text>
+
+  <!-- GPIO27 Pin 13 -->
+  <circle cx="728" cy="514" r="4" fill="#4cc9f0"/>
+  <text x="748" y="518" fill="#4cc9f0" font-size="10" font-weight="bold">Pin 13 · GPIO27</text>
+
+  <!-- 3.3V Pin 17 again (LITE) — shown as shared -->
+  <circle cx="728" cy="542" r="4" fill="#e63946"/>
+  <text x="748" y="546" fill="#e63946" font-size="10" font-weight="bold">Pin 17 · 3.3V</text>
+  <text x="900" y="546" text-anchor="end" fill="#888" font-size="8">shared with VIN</text>
+
+  <!-- GPIO7 CE1 Pin 26 -->
+  <circle cx="728" cy="570" r="4" fill="#9b59b6"/>
+  <text x="748" y="574" fill="#9b59b6" font-size="10" font-weight="bold">Pin 26 · GPIO7 CE1</text>
+
+  <!-- GPIO17 Pin 11 -->
+  <circle cx="728" cy="598" r="4" fill="#9b59b6"/>
+  <text x="748" y="602" fill="#9b59b6" font-size="10" font-weight="bold">Pin 11 · GPIO17</text>
+
+  <!-- ============================================================
+       WIRES between TFT and Pi
+       ============================================================ -->
+
+  <!-- VIN (red) TFT:VIN → Pi:Pin17 3.3V -->
+  <path d="M 238 290 Q 480 260 722 290" stroke="#e63946" stroke-width="2.5" fill="none"/>
+  <text x="480" y="258" text-anchor="middle" fill="#e63946" font-size="9">3.3V</text>
+
+  <!-- GND (gray) TFT:GND → Pi:Pin20 GND -->
+  <path d="M 238 346 L 722 346" stroke="#666" stroke-width="2.5" fill="none"/>
+  <text x="480" y="341" text-anchor="middle" fill="#777" font-size="9">GND (black)</text>
+
+  <!-- CLK (blue) TFT:CLK → Pi:Pin23 GPIO11 -->
+  <path d="M 238 374 L 722 374" stroke="#3a86ff" stroke-width="2.5" fill="none"/>
+  <text x="480" y="369" text-anchor="middle" fill="#3a86ff" font-size="9">SCLK (blue)</text>
+
+  <!-- MOSI (blue) TFT:MOSI → Pi:Pin19 GPIO10 -->
+  <path d="M 238 402 L 722 402" stroke="#3a86ff" stroke-width="2.5" fill="none"/>
+  <text x="480" y="397" text-anchor="middle" fill="#3a86ff" font-size="9">MOSI (blue)</text>
+
+  <!-- MISO (blue) TFT:MISO → Pi:Pin21 GPIO9 -->
+  <path d="M 238 430 L 722 430" stroke="#3a86ff" stroke-width="2.5" fill="none"/>
+  <text x="480" y="425" text-anchor="middle" fill="#3a86ff" font-size="9">MISO (blue)</text>
+
+  <!-- CS (blue) TFT:CS → Pi:Pin24 GPIO8 -->
+  <path d="M 238 458 L 722 458" stroke="#3a86ff" stroke-width="2.5" fill="none"/>
+  <text x="480" y="453" text-anchor="middle" fill="#3a86ff" font-size="9">CS / CE0 (blue)</text>
+
+  <!-- DC (cyan) TFT:DC → Pi:Pin22 GPIO25 -->
+  <path d="M 238 486 L 722 486" stroke="#4cc9f0" stroke-width="2.5" fill="none"/>
+  <text x="480" y="481" text-anchor="middle" fill="#4cc9f0" font-size="9">DC (cyan)</text>
+
+  <!-- RST (cyan) TFT:RST → Pi:Pin13 GPIO27 -->
+  <path d="M 238 514 L 722 514" stroke="#4cc9f0" stroke-width="2.5" fill="none"/>
+  <text x="480" y="509" text-anchor="middle" fill="#4cc9f0" font-size="9">RST (cyan)</text>
+
+  <!-- LITE (red) TFT:LITE → Pi:Pin17 3.3V (shared) -->
+  <path d="M 238 542 Q 480 560 722 542" stroke="#e63946" stroke-width="2" stroke-dasharray="6,3" fill="none"/>
+  <text x="480" y="562" text-anchor="middle" fill="#e63946" font-size="9">3.3V shared</text>
+
+  <!-- T_CS (purple) TFT:T_CS → Pi:Pin26 GPIO7 -->
+  <path d="M 238 570 L 722 570" stroke="#9b59b6" stroke-width="2.5" fill="none"/>
+  <text x="480" y="565" text-anchor="middle" fill="#9b59b6" font-size="9">T_CS (purple)</text>
+
+  <!-- T_IRQ (purple) TFT:T_IRQ → Pi:Pin11 GPIO17 -->
+  <path d="M 238 598 L 722 598" stroke="#9b59b6" stroke-width="2.5" fill="none"/>
+  <text x="480" y="593" text-anchor="middle" fill="#9b59b6" font-size="9">T_IRQ (purple)</text>
+
+  <!-- ============================================================
+       Wire color legend (top center)
+       ============================================================ -->
+  <rect x="330" y="78" width="300" height="130" fill="#0d0d1a" stroke="#333" stroke-width="1" rx="6"/>
+  <text x="480" y="97" text-anchor="middle" fill="#ccc" font-size="11" font-weight="bold">Wire Color Guide</text>
+  <line x1="345" y1="104" x2="465" y2="104" stroke="#e63946" stroke-width="2.5"/>
+  <text x="470" y="108" fill="#e63946" font-size="10">Red — 3.3V power</text>
+  <line x1="345" y1="120" x2="465" y2="120" stroke="#666" stroke-width="2.5"/>
+  <text x="470" y="124" fill="#888" font-size="10">Black — GND</text>
+  <line x1="345" y1="136" x2="465" y2="136" stroke="#3a86ff" stroke-width="2.5"/>
+  <text x="470" y="140" fill="#3a86ff" font-size="10">Blue — SPI0 (CLK/MOSI/MISO/CS)</text>
+  <line x1="345" y1="152" x2="465" y2="152" stroke="#4cc9f0" stroke-width="2.5"/>
+  <text x="470" y="156" fill="#4cc9f0" font-size="10">Cyan — DC pin / RST pin</text>
+  <line x1="345" y1="168" x2="465" y2="168" stroke="#9b59b6" stroke-width="2.5"/>
+  <text x="470" y="172" fill="#9b59b6" font-size="10">Purple — Touchscreen (T_CS / T_IRQ)</text>
+  <line x1="345" y1="184" x2="465" y2="184" stroke="#e63946" stroke-width="2" stroke-dasharray="5,3"/>
+  <text x="470" y="188" fill="#e63946" font-size="10">Red dashed — 3.3V shared (LITE)</text>
+
+  <!-- Footer -->
+  <text x="480" y="624" text-anchor="middle" fill="#444" font-size="9">3.3V logic level · No level shifter needed · All signals 3.3V compatible</text>
+  <text x="480" y="638" text-anchor="middle" fill="#444" font-size="9">bike_computer_tft_wiring.svg</text>
+</svg>

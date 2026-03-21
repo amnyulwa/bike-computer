@@ -1,0 +1,28 @@
+# Ride data (GPX files) — too large/personal for the repo
+rides/
+
+# Fonts are copied by install.sh from system packages
+fonts/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+
+# Environment / secrets
+.env
+*.env
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
