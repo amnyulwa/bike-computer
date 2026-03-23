@@ -115,6 +115,10 @@ def parse_args():
         "--simulate", action="store_true",
         help="Run with simulated data (no hardware required)"
     )
+    p.add_argument(
+        "--no-display", action="store_true",
+        help="Read real GPS and sensors but skip the TFT screen (headless mode)"
+    )
     return p.parse_args()
 
 
@@ -122,8 +126,10 @@ def main():
     args = parse_args()
     state = RideState()
 
+    headless = args.simulate or args.no_display
+
     # ── Setup GPIO for touch IRQ (before display init) ────────────────────────
-    if not args.simulate:
+    if not headless:
         try:
             import RPi.GPIO as GPIO
             GPIO.setmode(GPIO.BCM)
@@ -134,12 +140,14 @@ def main():
     # ── Display ───────────────────────────────────────────────────────────────
     from display import Dashboard
     dash = Dashboard()
-    if not args.simulate:
+    if not headless:
         try:
             dash.setup()
         except Exception as exc:
             log.error("Display init failed: %s", exc)
             sys.exit(1)
+    elif args.no_display:
+        log.info("Headless mode: TFT skipped — printing readings to console")
     else:
         log.info("Simulate mode: display output will be skipped (no hardware)")
 
@@ -168,6 +176,7 @@ def main():
         logger.start()
         threads.append(logger)
 
+
     # ── Graceful shutdown ─────────────────────────────────────────────────────
     running = True
 
@@ -179,7 +188,7 @@ def main():
     signal.signal(signal.SIGINT,  _shutdown)
     signal.signal(signal.SIGTERM, _shutdown)
 
-    # ── Main display loop ─────────────────────────────────────────────────────
+    # ── Main loop ─────────────────────────────────────────────────────────────
     frame_interval = 1.0 / config.DISPLAY_FPS
     touch_was_down = False
 
@@ -188,22 +197,45 @@ def main():
     while running:
         t0 = time.monotonic()
 
-        # Touch detection → toggle units
-        touch_now = dash.check_touch()
-        if touch_now and not touch_was_down:
-            dash.toggle_units()
-            log.debug("Units toggled to %s", dash._units)
-        touch_was_down = touch_now
+        if headless:
+            # Print a compact status line to the console every second
+            with state.lock:
+                fix    = "FIX" if state.gps_fix else "NO FIX"
+                print(
+                    f"\r{fix:6s}  "
+                    f"spd={state.speed_kmh:5.1f}km/h  "
+                    f"dist={state.distance_km:6.2f}km  "
+                    f"gps_alt={state.gps_altitude_m:6.1f}m  "
+                    f"baro_alt={state.baro_altitude_m:6.1f}m  "
+                    f"hdg={state.heading_deg or 0:5.1f}°  "
+                    f"temp={state.temperature_c:5.1f}°C  "
+                    f"hum={state.humidity_pct:4.1f}%  "
+                    f"voc={state.voc_raw:6d}  "
+                    f"sat={state.gps_satellites}  "
+                    f"lat={state.gps_lat:.5f}  lon={state.gps_lon:.5f}",
+                    end="", flush=True,
+                )
+            time.sleep(1.0)
+        else:
+            # Touch detection → toggle units
+            touch_now = dash.check_touch()
+            if touch_now and not touch_was_down:
+                dash.toggle_units()
+                log.debug("Units toggled to %s", dash._units)
+            touch_was_down = touch_now
 
-        # Render frame
-        try:
-            dash.draw(state)
-        except Exception as exc:
-            log.error("Display draw error: %s", exc)
+            # Render frame
+            try:
+                dash.draw(state)
+            except Exception as exc:
+                log.error("Display draw error: %s", exc)
 
-        # Maintain target FPS
-        elapsed = time.monotonic() - t0
-        time.sleep(max(0.0, frame_interval - elapsed))
+            # Maintain target FPS
+            elapsed = time.monotonic() - t0
+            time.sleep(max(0.0, frame_interval - elapsed))
+
+    if headless:
+        print()  # newline after the last status line
 
     # ── Cleanup ───────────────────────────────────────────────────────────────
     log.info("Stopping threads…")
