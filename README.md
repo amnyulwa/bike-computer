@@ -8,7 +8,7 @@ A GPS-connected bike computer built on a Raspberry Pi Zero. Displays real-time s
 |---|---|---|
 | Raspberry Pi Zero (with headers) | — | Main compute unit |
 | Adafruit Ultimate GPS HAT | UART (`/dev/serial0`) | Location, speed, altitude |
-| Waveshare Environment Sensor HAT | I2C | Temperature, humidity, pressure, VOC, IMU |
+| Waveshare Sense HAT (B) — SKU HIPI73-1 | I2C | Temperature, humidity, pressure, lux, IMU |
 | Adafruit 2.4" ILI9341 TFT + Touch | SPI0 | Display and touch input |
 
 The GPS HAT and Waveshare HAT stack directly onto the Pi's 40-pin header using stacking headers. The TFT connects via jumper wires to the passthrough pins.
@@ -52,7 +52,7 @@ Single-screen layout (320×240, landscape):
 ├──────────────────────────────────────┤
 │  DIST  14.2 km    TEMP 18.2°C  68%  │  distance · temperature · humidity
 ├──────────────────────────────────────┤
-│  VOC 18432        ● FIX  8 sat      │  air quality · GPS fix status
+│  LIGHT 8200 lux   ● FIX  8 sat      │  ambient light · GPS fix status
 │  51.50740°N  0.12780°E              │  coordinates
 └──────────────────────────────────────┘
 ```
@@ -66,7 +66,7 @@ Single-screen layout (320×240, landscape):
 | `main.py` | Entry point, main display loop, `RideState` dataclass |
 | `config.py` | All pin numbers, I2C addresses, and tuning constants |
 | `gps_reader.py` | GPS UART thread — parses NMEA, accumulates distance |
-| `sensors.py` | I2C sensor thread — BME280, ICM20948, SGP40, LPS22HB |
+| `sensors.py` | I2C sensor thread — SHTC3, LPS22HB, ICM20948, TCS34725 |
 | `display.py` | ILI9341 driver and dashboard renderer (PIL) |
 | `data_logger.py` | GPX file writer, flushes every 5 seconds |
 
@@ -76,7 +76,7 @@ Four concurrent threads share a single `RideState` object protected by a `thread
 
 ```
 GPSThread    ─── UART /dev/serial0 ──→ speed, lat/lon, altitude, distance
-SensorThread ─── I2C bus 1 ─────────→ temp, humidity, pressure, VOC, heading
+SensorThread ─── I2C bus 1 ─────────→ temp, humidity, pressure, lux, heading
 LoggerThread ─── ~/rides/*.gpx ──────→ trackpoint every 5 s (when fix held)
 Main thread  ─── ILI9341 SPI ────────→ dashboard render at 2 fps
 ```
@@ -100,7 +100,21 @@ This enables SPI, I2C, and UART; installs all Python packages; copies fonts; cre
 python3 main.py
 ```
 
-### 3. Simulate without hardware
+### 3. Run without display (headless)
+
+Read real GPS and sensor data but skip the TFT screen — useful for testing hardware before the display is connected:
+
+```bash
+python3 main.py --no-display
+```
+
+Prints a live status line to the console:
+
+```
+FIX    spd= 18.4km/h  dist=  2.34km  gps_alt=  38.0m  baro_alt=  36.2m  hdg=278.0°  temp=18.2°C  hum=62.0%  lux= 8200.0  sat=8  lat=38.54321  lon=-77.12345
+```
+
+### 4. Simulate without hardware
 
 Test the dashboard layout on any machine — generates fake GPS and sensor data:
 
@@ -108,13 +122,14 @@ Test the dashboard layout on any machine — generates fake GPS and sensor data:
 python3 main.py --simulate
 ```
 
-### 4. Service management
+### 5. Service management
 
 ```bash
 sudo systemctl start bike-computer     # start
 sudo systemctl stop bike-computer      # stop
 sudo systemctl status bike-computer    # check status
 journalctl -u bike-computer -f         # live logs
+journalctl -u bike-computer -n 20      # last 20 log lines
 ```
 
 ## Configuration
@@ -146,7 +161,7 @@ GPX files are saved to `~/rides/ride_YYYY-MM-DD_HH-MM.gpx` on first GPS fix. Eac
 - Latitude, longitude
 - Barometric altitude (metres)
 - UTC timestamp
-- Temperature, humidity, VOC index, compass heading, speed
+- Temperature, humidity, ambient lux, compass heading, speed
 
 Import into **Strava**: Dashboard → Upload activity → select the `.gpx` file
 Import into **Komoot**: Profile → Tours → Import GPX
@@ -173,8 +188,14 @@ bash scripts/setup_pi_sync.sh
 # Watch sync logs live on the Pi:
 ssh asm@10.0.0.111 'journalctl -t bike-sync -f'
 
+# Check if latest code was pulled (shows recent sync history):
+ssh asm@10.0.0.111 'journalctl -t bike-sync -n 20'
+
 # Force an immediate sync:
 ssh asm@10.0.0.111 'sudo systemctl start bike-sync.service'
+
+# Confirm the service restarted with new code:
+ssh asm@10.0.0.111 'journalctl -u bike-computer -n 20'
 ```
 
 > **Note:** The GitHub Actions self-hosted runner does not support ARMv6 (Pi Zero). The polling timer is used instead.
@@ -184,8 +205,8 @@ ssh asm@10.0.0.111 'sudo systemctl start bike-sync.service'
 ```
 adafruit-blinka
 adafruit-circuitpython-rgb-display
-adafruit-circuitpython-bme280
-adafruit-circuitpython-sgp40
+adafruit-circuitpython-shtc3
+adafruit-circuitpython-tcs34725
 adafruit-circuitpython-lps2x
 pillow
 pyserial
