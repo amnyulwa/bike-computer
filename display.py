@@ -194,7 +194,7 @@ class Dashboard:
             heading_deg  = state.heading_deg
             temperature  = state.temperature_c
             humidity     = state.humidity_pct
-            voc_raw      = state.voc_raw
+            lux          = state.lux
             lat          = state.gps_lat
             lon          = state.gps_lon
             gps_fix      = state.gps_fix
@@ -244,11 +244,10 @@ class Dashboard:
         y_div3 = y3 + 44
         draw.line([(0, y_div3), (W, y_div3)], fill=C_DIVIDER, width=1)
 
-        # ── Row D: VOC index | GPS fix status ─────────────────────────────────
+        # ── Row D: Ambient lux | GPS fix status ───────────────────────────────
         y4 = y_div3 + 4
-        voc_col = self._voc_colour(voc_raw)
-        self._label_value(draw, 6, y4, "VOC RAW",
-                          str(voc_raw), "", vcolour=voc_col)
+        self._label_value(draw, 6, y4, "LIGHT",
+                          f"{lux:.0f}", "lux", vcolour=(200, 200, 80))
 
         # Fix indicator dot + satellite count
         fix_col  = C_FIX_OK if gps_fix else C_FIX_NONE

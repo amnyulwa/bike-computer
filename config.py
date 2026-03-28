@@ -19,11 +19,11 @@ TOUCH_IRQ_PIN = 17  # GPIO17 — interrupt (active low)
 GPS_UART_PORT = "/dev/serial0"
 GPS_BAUD_RATE = 9600
 
-# ── I2C Sensor Addresses ──────────────────────────────────────────────────────
-BME280_I2C_ADDR   = 0x76   # Waveshare HAT — temp / humidity / pressure
-LPS22HB_I2C_ADDR  = 0x5C   # Waveshare HAT — barometric pressure (backup)
-ICM20948_I2C_ADDR = 0x68   # Waveshare HAT — 9-DOF IMU (accel/gyro/mag)
-SGP40_I2C_ADDR    = 0x59   # Waveshare HAT — VOC gas sensor
+# ── I2C Sensor Addresses (Waveshare Sense HAT B, SKU HIPI73-1) ───────────────
+SHTC3_I2C_ADDR    = 0x70   # Temperature + humidity
+LPS22HB_I2C_ADDR  = 0x5C   # Barometric pressure → altitude
+ICM20948_I2C_ADDR = 0x68   # 9-DOF IMU (accel/gyro/mag) → heading
+TCS34725_I2C_ADDR = 0x29   # Colour + clear channel → lux
 
 # ── Barometric altitude reference ─────────────────────────────────────────────
 # Standard atmosphere sea-level pressure in hPa.

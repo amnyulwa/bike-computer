@@ -1,18 +1,17 @@
 """
 Bike Computer — I2C Sensor Thread
-Polls the Waveshare Environment Sensor HAT sensors at SENSOR_POLL_HZ and
-updates the shared RideState.
+Polls the Waveshare Sense HAT (B) sensors at SENSOR_POLL_HZ and updates
+the shared RideState.
 
-Sensors on the HAT:
-  BME280   (0x76) — temperature, relative humidity, barometric pressure
-  LPS22HB  (0x5C) — barometric pressure (backup / cross-check)
-  ICM20948 (0x68) — 9-DOF IMU; we use the magnetometer for compass heading
-  SGP40    (0x59) — raw VOC gas sensor (Sensirion algorithm gives VOC index)
+Sensors on the Sense HAT (B) — SKU HIPI73-1:
+  SHTC3    (0x70) — temperature, relative humidity
+  LPS22HB  (0x5C) — barometric pressure → altitude
+  ICM20948 (0x68) — 9-DOF IMU; magnetometer used for compass heading
+  TCS34725 (0x29) — colour sensor; clear channel used for ambient lux
 
-Barometric altitude is derived from pressure using the international
-barometric formula:
+Barometric altitude formula:
     altitude = 44330 * (1 - (P / P0)^0.1903)
-where P0 is sea-level pressure from config.SEA_LEVEL_HPA.
+where P0 = config.SEA_LEVEL_HPA (update with local QNH for best accuracy).
 
 ICM20948 compass note:
   Raw magnetometer readings include hard-iron distortion from nearby metals.
@@ -27,9 +26,8 @@ import time
 import logging
 
 import board
-import busio
-import adafruit_bme280.basic as adafruit_bme280
-import adafruit_sgp40
+import adafruit_shtc3
+import adafruit_tcs34725
 from adafruit_lps2x import LPS22
 
 import config
@@ -37,17 +35,14 @@ import config
 log = logging.getLogger(__name__)
 
 # ── ICM20948 register map (relevant subset) ───────────────────────────────────
-_ICM_BANK_SEL        = 0x7F
-_ICM_WHO_AM_I        = 0x00   # bank 0
-_ICM_PWR_MGMT_1      = 0x06   # bank 0
-_ICM_USER_CTRL       = 0x03   # bank 0
-_ICM_I2C_MST_CTRL    = 0x01   # bank 3
-_ICM_MAG_CTRL2       = 0x31   # AK09916 magnetometer control
-_ICM_MAG_ST1         = 0x10   # AK09916 status 1
-_ICM_MAG_HXL         = 0x11   # AK09916 X low byte
-_ICM_I2C_MST_EN      = 0x20
-_AK09916_ADDR        = 0x0C   # magnetometer slave address
-_AK09916_CNTL2       = 0x31
+_ICM_BANK_SEL            = 0x7F
+_ICM_PWR_MGMT_1          = 0x06
+_ICM_USER_CTRL           = 0x03
+_ICM_I2C_MST_CTRL        = 0x01
+_ICM_MAG_HXL             = 0x11
+_ICM_I2C_MST_EN          = 0x20
+_AK09916_ADDR            = 0x0C
+_AK09916_CNTL2           = 0x31
 _AK09916_MODE_CONT_100HZ = 0x08
 
 
@@ -67,8 +62,6 @@ class ICM20948:
         self._addr = address
         self._init()
 
-    # ── low-level helpers ──────────────────────────────────────────────────────
-
     def _write(self, reg: int, value: int):
         self._bus.write_i2c_block_data(self._addr, reg, [value])
 
@@ -78,79 +71,52 @@ class ICM20948:
     def _bank(self, bank: int):
         self._write(_ICM_BANK_SEL, bank << 4)
 
-    # ── initialisation ─────────────────────────────────────────────────────────
-
     def _init(self):
         self._bank(0)
-        # Wake chip, auto-select clock
-        self._write(_ICM_PWR_MGMT_1, 0x01)
+        self._write(_ICM_PWR_MGMT_1, 0x01)   # wake, auto-select clock
         time.sleep(0.1)
-
-        # Enable I2C master so we can talk to the AK09916 magnetometer
-        self._bank(0)
         ctrl = self._read(_ICM_USER_CTRL)[0]
         self._write(_ICM_USER_CTRL, ctrl | _ICM_I2C_MST_EN)
-
         self._bank(3)
         self._write(_ICM_I2C_MST_CTRL, 0x07)  # 400 kHz I2C master clock
-
-        # Configure AK09916 for continuous 100 Hz measurement
         self._mag_write(_AK09916_CNTL2, _AK09916_MODE_CONT_100HZ)
         time.sleep(0.01)
         log.info("ICM20948 initialised, magnetometer active")
 
     def _mag_write(self, reg: int, value: int):
-        """Write to the AK09916 magnetometer via ICM20948 I2C master."""
         self._bank(3)
-        self._write(0x03, _AK09916_ADDR & ~0x80)  # SLV0_ADDR write
-        self._write(0x04, reg)                      # SLV0_REG
-        self._write(0x06, value)                    # SLV0_DO
-        self._write(0x05, 0x81)                     # SLV0_CTRL: enable, 1 byte
+        self._write(0x03, _AK09916_ADDR & ~0x80)
+        self._write(0x04, reg)
+        self._write(0x06, value)
+        self._write(0x05, 0x81)
 
     def _mag_read(self, reg: int, length: int) -> bytes:
-        """Read from AK09916 via ICM20948 I2C master."""
         self._bank(3)
-        self._write(0x03, _AK09916_ADDR | 0x80)    # SLV0_ADDR read
-        self._write(0x04, reg)                       # SLV0_REG
-        self._write(0x05, 0x80 | length)             # SLV0_CTRL: enable, N bytes
+        self._write(0x03, _AK09916_ADDR | 0x80)
+        self._write(0x04, reg)
+        self._write(0x05, 0x80 | length)
         time.sleep(0.01)
         self._bank(0)
-        return self._read(0x3B + 0 * 8, length)     # EXT_SLV_SENS_DATA_00
-
-    # ── public API ─────────────────────────────────────────────────────────────
-
-    def read_magnetometer(self) -> tuple[float, float, float]:
-        """
-        Return (x, y, z) magnetometer readings in µT.
-        The AK09916 sensitivity is 0.15 µT/LSB.
-        """
-        data = self._mag_read(_ICM_MAG_HXL, 6)
-        x, y, z = struct.unpack_from("<hhh", data)
-        scale = 0.15
-        return x * scale, y * scale, z * scale
+        return self._read(0x3B, length)
 
     def heading_degrees(self) -> float:
         """
         Magnetic heading in degrees (0 = North, 90 = East).
-        Apply hard-iron offsets from config before computing atan2.
-
-        NOTE: This is the raw magnetic heading, not true north.
-        Magnetic declination correction is not applied here — add your local
-        declination to the result if needed.
+        NOTE: raw magnetic heading — add local magnetic declination if needed.
+        Update config.MAG_OFFSET_X/Y after performing a figure-8 calibration.
         """
-        mx, my, _ = self.read_magnetometer()
-        mx -= config.MAG_OFFSET_X
-        my -= config.MAG_OFFSET_Y
+        data = self._mag_read(_ICM_MAG_HXL, 6)
+        x, y, z = struct.unpack_from("<hhh", data)
+        mx = x * 0.15 - config.MAG_OFFSET_X
+        my = y * 0.15 - config.MAG_OFFSET_Y
         heading = math.degrees(math.atan2(my, mx))
-        if heading < 0:
-            heading += 360.0
-        return heading
+        return heading + 360.0 if heading < 0 else heading
 
 
 class SensorThread(threading.Thread):
     """
-    Background thread that polls all I2C sensors on the Waveshare HAT and
-    writes the results into the shared RideState.
+    Background thread that polls all I2C sensors on the Sense HAT (B) and
+    writes results into the shared RideState.
     """
 
     def __init__(self, state):
@@ -173,29 +139,35 @@ class SensorThread(threading.Thread):
 
     def _init_sensors(self):
         import smbus2
-        self._i2c = board.I2C()
+        i2c = board.I2C()
         self._bus = smbus2.SMBus(1)
 
-        self._bme = adafruit_bme280.Adafruit_BME280_I2C(
-            self._i2c, address=config.BME280_I2C_ADDR
-        )
-        self._bme.sea_level_pressure = config.SEA_LEVEL_HPA
+        # SHTC3 — temperature + humidity (primary)
+        self._shtc3 = adafruit_shtc3.SHTC3(i2c)
+        log.info("SHTC3 initialised at 0x%02x", config.SHTC3_I2C_ADDR)
 
-        try:
-            self._lps = LPS22(self._i2c, address=config.LPS22HB_I2C_ADDR)
-        except Exception:
-            log.warning("LPS22HB not found — using BME280 pressure only")
-            self._lps = None
+        # LPS22HB — barometric pressure → altitude
+        self._lps = LPS22(i2c, address=config.LPS22HB_I2C_ADDR)
+        log.info("LPS22HB initialised at 0x%02x", config.LPS22HB_I2C_ADDR)
 
-        self._sgp = adafruit_sgp40.SGP40(self._i2c)
-
+        # ICM20948 — 9-DOF IMU for compass heading
         try:
             self._icm = ICM20948(self._bus, address=config.ICM20948_I2C_ADDR)
-        except Exception:
-            log.warning("ICM20948 not found — heading will use GPS COG")
+        except Exception as exc:
+            log.warning("ICM20948 not found (%s) — heading will use GPS COG", exc)
             self._icm = None
 
-        log.info("I2C sensors initialised")
+        # TCS34725 — colour sensor, clear channel used for lux
+        try:
+            self._tcs = adafruit_tcs34725.TCS34725(i2c)
+            self._tcs.integration_time = 50   # ms
+            self._tcs.gain = 4
+            log.info("TCS34725 initialised at 0x%02x", config.TCS34725_I2C_ADDR)
+        except Exception as exc:
+            log.warning("TCS34725 not found (%s)", exc)
+            self._tcs = None
+
+        log.info("I2C sensor init complete")
 
     def _poll_loop(self, interval: float):
         while not self._stop_event.is_set():
@@ -205,33 +177,23 @@ class SensorThread(threading.Thread):
             time.sleep(max(0.0, interval - elapsed))
 
     def _read_all(self):
+        # ── SHTC3: temperature + humidity ─────────────────────────────────────
         try:
-            temp_c    = self._bme.temperature
-            humidity  = self._bme.relative_humidity
-            pressure  = self._bme.pressure          # hPa
+            temp_c, humidity = self._shtc3.measurements
         except Exception as exc:
-            log.debug("BME280 read error: %s", exc)
+            log.debug("SHTC3 read error: %s", exc)
             return
 
-        # Prefer LPS22HB for pressure if available (slightly more accurate)
-        if self._lps is not None:
-            try:
-                pressure = self._lps.pressure
-            except Exception:
-                pass
+        # ── LPS22HB: pressure → barometric altitude ───────────────────────────
+        try:
+            pressure = self._lps.pressure
+        except Exception as exc:
+            log.debug("LPS22HB read error: %s", exc)
+            return
 
         baro_alt = _baro_altitude(pressure)
 
-        # SGP40 VOC index (requires temperature + humidity compensation)
-        voc_raw = 0
-        try:
-            voc_raw = self._sgp.measure_raw(
-                temperature=temp_c, relative_humidity=humidity
-            )
-        except Exception as exc:
-            log.debug("SGP40 read error: %s", exc)
-
-        # ICM20948 compass heading
+        # ── ICM20948: compass heading (optional) ──────────────────────────────
         heading = None
         if self._icm is not None:
             try:
@@ -239,11 +201,19 @@ class SensorThread(threading.Thread):
             except Exception as exc:
                 log.debug("ICM20948 read error: %s", exc)
 
+        # ── TCS34725: ambient lux from clear channel (optional) ───────────────
+        lux = 0.0
+        if self._tcs is not None:
+            try:
+                lux = self._tcs.lux or 0.0
+            except Exception as exc:
+                log.debug("TCS34725 read error: %s", exc)
+
         with self._state.lock:
-            self._state.temperature_c  = temp_c
-            self._state.humidity_pct   = humidity
-            self._state.pressure_hpa   = pressure
+            self._state.temperature_c   = temp_c
+            self._state.humidity_pct    = humidity
+            self._state.pressure_hpa    = pressure
             self._state.baro_altitude_m = baro_alt
-            self._state.voc_raw        = voc_raw
+            self._state.lux             = lux
             if heading is not None:
                 self._state.heading_deg = heading

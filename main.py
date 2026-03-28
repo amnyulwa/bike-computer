@@ -61,7 +61,7 @@ class RideState:
     humidity_pct:    float = 0.0
     pressure_hpa:    float = config.SEA_LEVEL_HPA
     baro_altitude_m: float = 0.0
-    voc_raw:         int   = 0
+    lux:             float = 0.0   # TCS34725 ambient light
 
     # Display
     units: str = config.DEFAULT_UNITS   # "metric" | "imperial"
@@ -102,7 +102,7 @@ class SimulatorThread(threading.Thread):
                 self._state.baro_altitude_m = (
                     44330.0 * (1.0 - (self._state.pressure_hpa / 1013.25) ** 0.1903)
                 )
-                self._state.voc_raw = 18000 + int(5000 * math.sin(t / 30))
+                self._state.lux = 8000.0 + 4000.0 * math.sin(t / 30)
 
             time.sleep(1.0)
 
@@ -210,7 +210,7 @@ def main():
                     f"hdg={state.heading_deg or 0:5.1f}°  "
                     f"temp={state.temperature_c:5.1f}°C  "
                     f"hum={state.humidity_pct:4.1f}%  "
-                    f"voc={state.voc_raw:6d}  "
+                    f"lux={state.lux:7.1f}  "
                     f"sat={state.gps_satellites}  "
                     f"lat={state.gps_lat:.5f}  lon={state.gps_lon:.5f}",
                     end="", flush=True,

@@ -15,7 +15,7 @@ GPX output format:
       <gps_alt>...</gps_alt>
       <temp_c>...</temp_c>
       <humidity>...</humidity>
-      <voc_raw>...</voc_raw>
+      <lux>...</lux>
       <heading>...</heading>
       <speed_kmh>...</speed_kmh>
     </extensions>
@@ -85,7 +85,7 @@ class DataLogger(threading.Thread):
                     baro_alt = self._state.baro_altitude_m
                     temp_c   = self._state.temperature_c
                     humidity = self._state.humidity_pct
-                    voc_raw  = self._state.voc_raw
+                    lux      = self._state.lux
                     heading  = self._state.heading_deg
                     speed    = self._state.speed_kmh
 
@@ -94,7 +94,7 @@ class DataLogger(threading.Thread):
                         self._open_file()
                     self._write_trkpt(
                         lat, lon, baro_alt, gps_alt,
-                        temp_c, humidity, voc_raw, heading, speed,
+                        temp_c, humidity, lux, heading, speed,
                     )
             except Exception as exc:
                 log.error("Logger error: %s", exc)
@@ -137,7 +137,7 @@ class DataLogger(threading.Thread):
         gps_alt: float,
         temp_c: float,
         humidity: float,
-        voc_raw: int,
+        lux: float,
         heading: float | None,
         speed_kmh: float,
     ):
@@ -152,7 +152,7 @@ class DataLogger(threading.Thread):
             f'          <gps_alt>{_fmt(gps_alt, 1)}</gps_alt>\n'
             f'          <temp_c>{_fmt(temp_c, 2)}</temp_c>\n'
             f'          <humidity>{_fmt(humidity, 1)}</humidity>\n'
-            f'          <voc_raw>{int(voc_raw)}</voc_raw>\n'
+            f'          <lux>{_fmt(lux, 1)}</lux>\n'
             f'          <heading>{hdg_str}</heading>\n'
             f'          <speed_kmh>{_fmt(speed_kmh, 2)}</speed_kmh>\n'
             f'        </extensions>\n'

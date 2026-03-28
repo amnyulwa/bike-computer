@@ -7,14 +7,14 @@ adafruit-blinka
 # ILI9341 TFT display driver
 adafruit-circuitpython-rgb-display
 
-# BME280 — temperature, humidity, barometric pressure
-adafruit-circuitpython-bme280
+# SHTC3 — temperature + humidity (Waveshare Sense HAT B)
+adafruit-circuitpython-shtc3
 
-# SGP40 — VOC gas sensor
-adafruit-circuitpython-sgp40
-
-# LPS22HB — barometric pressure (backup sensor on Waveshare HAT)
+# LPS22HB — barometric pressure (Waveshare Sense HAT B)
 adafruit-circuitpython-lps2x
+
+# TCS34725 — colour + lux (Waveshare Sense HAT B)
+adafruit-circuitpython-tcs34725
 
 # Image composition for the TFT framebuffer
 pillow
