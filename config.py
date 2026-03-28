@@ -28,7 +28,7 @@ TCS34725_I2C_ADDR = 0x29   # Colour + clear channel → lux
 # ── Barometric altitude reference ─────────────────────────────────────────────
 # Standard atmosphere sea-level pressure in hPa.
 # For better accuracy, update this to your local QNH from a weather service.
-SEA_LEVEL_HPA = 1013.25
+SEA_LEVEL_HPA = 1033.0
 
 # ── Timing ────────────────────────────────────────────────────────────────────
 SENSOR_POLL_HZ   = 1    # how often to read I2C sensors (Hz)
